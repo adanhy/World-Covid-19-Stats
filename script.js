@@ -66,7 +66,7 @@ async function getWorld() {
 
     world["Other"] = world[""];
     delete world[""];
-    console.log(world);
+    // console.log(world);
     generateContinentMenu();
   } catch (error) {
     console.log(error);
@@ -74,24 +74,28 @@ async function getWorld() {
 }
 
 function generateContinentMenu() {
-  Object.keys(world).forEach((el) => {
-    const b = document.createElement("button");
-    b.textContent = el;
-    b.classList.add(`glow-on-hover`);
+  try {
+    Object.keys(world).forEach((el) => {
+      const b = document.createElement("button");
+      b.textContent = el;
+      b.classList.add(`glow-on-hover`);
 
-    b.addEventListener(`click`, (e) => {
-      document.querySelector(`#countries-box`).innerHTML = ``;
-      console.log(world[el]);
+      b.addEventListener(`click`, (e) => {
+        document.querySelector(`#countries-box`).innerHTML = ``;
+        // console.log(world[el]);
 
-      world[el].forEach((v) => {
-        const b2 = document.createElement("button");
-        b2.textContent = v.name;
-        b2.className = `small-btn`;
-        document.querySelector(`#countries-box`).appendChild(b2);
+        world[el].forEach((v) => {
+          const b2 = document.createElement("button");
+          b2.textContent = v.name;
+          b2.className = `small-btn`;
+          document.querySelector(`#countries-box`).appendChild(b2);
+        });
       });
+      document.querySelector(`#regions-box`).appendChild(b);
     });
-    document.querySelector(`#regions-box`).appendChild(b);
-  });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function generateStatsButtons() {
@@ -141,7 +145,7 @@ function getStatByRegion(region, instat) {
 function addDatatoChart(chart, label, labels, data) {
   chart.data.labels = labels;
   chart.data.datasets[0].label = label;
-  console.log(`adding ${data.length} elements to chart`);
+  // console.log(`adding ${data.length} elements to chart`);
   data.forEach((d) => {
     chart.data.datasets[0].data.push(d);
     chart.data.datasets[0].backgroundColor.push(getRandomColor());
@@ -153,7 +157,7 @@ function addDatatoChart(chart, label, labels, data) {
 function removeDataFromChart(chart) {
   chart.data.labels.pop();
   const l = chart.data.datasets[0].data.length;
-  console.log(`removing ${l} elements from chart`);
+  // console.log(`removing ${l} elements from chart`);
   for (let i = 0; i < l; i++) {
     chart.data.datasets[0].data.pop();
     chart.data.datasets[0].backgroundColor.pop();
@@ -185,9 +189,9 @@ function setRegionsButtons() {
     e.target.classList.add(`selected-region`);
 
     lastSelected.lastRegion = e.target.textContent;
-    console.log(
-      `selected: ${lastSelected.lastRegion} with ${lastSelected.lastStat}`
-    );
+    // console.log(
+    //   `selected: ${lastSelected.lastRegion} with ${lastSelected.lastStat}`
+    // );
     getStatByRegion(lastSelected.lastRegion, lastSelected.lastStat);
   });
 }
@@ -202,57 +206,59 @@ function setStatsButtonsEvents() {
     }
     e.target.classList.add(`selected-stat`);
     lastSelected.lastStat = e.target.textContent;
-    console.log(`selected: ${lastSelected.lastStat}`);
+    // console.log(`selected: ${lastSelected.lastStat}`);
     getStatByRegion(lastSelected.lastRegion, lastSelected.lastStat);
   });
 }
 
 function setCountriesButtonEvents() {
-  const cnt = document.querySelector(`#countries-box`);
-  const strip = document.querySelector(`#cont-stats`);
+  try {
+    const cnt = document.querySelector(`#countries-box`);
+    const strip = document.querySelector(`#cont-stats`);
 
-  cnt.addEventListener(`mouseover`, (ev) => {
-    strip.style.visibility = `visible`;
-    strip.innerHTML = "";
-    const obj =
-      world[lastSelected.lastRegion][
-        world[lastSelected.lastRegion].reduce((acc, v, i) => {
-          if (v.name === ev.target.textContent) return i;
-          return acc;
-        }, 0)
-      ];
-    console.log(obj);
-    const col = getRandomColor();
-    const head = document.createElement(`h1`);
-    head.textContent = obj.name;
-    head.style.color = col;
-    strip.appendChild(head);
+    cnt.addEventListener(`mouseover`, (ev) => {
+      strip.style.visibility = `visible`;
+      strip.innerHTML = "";
+      const obj =
+        world[lastSelected.lastRegion][
+          world[lastSelected.lastRegion].reduce((acc, v, i) => {
+            if (v.name === ev.target.textContent) return i;
+            return acc;
+          }, 0)
+        ];
+      // console.log(obj);
+      const col = getRandomColor();
+      const head = document.createElement(`h1`);
+      head.textContent = obj.name;
+      head.style.color = col;
+      strip.appendChild(head);
 
-    const timelbl = document.createElement(`h3`);
-    timelbl.textContent = `Last Updated`;
-    timelbl.style.color = col;
-    strip.appendChild(timelbl);
+      const timelbl = document.createElement(`h3`);
+      timelbl.textContent = `Last Updated`;
+      timelbl.style.color = col;
+      strip.appendChild(timelbl);
 
-    const time = document.createElement(`h3`);
-    time.textContent = Date(obj.statArr.latestUpdate);
-    time.style.color = col;
-    strip.appendChild(time);
+      const time = document.createElement(`h3`);
+      time.textContent = Date(obj.statArr.latestUpdate);
+      time.style.color = col;
+      strip.appendChild(time);
 
-    for (const prop in obj.statArr.data) {
-      if (Number.isInteger(obj.statArr.data[prop])) {
-        const lbl = document.createElement(`h3`);
-        lbl.textContent = `${prop}: ${obj.statArr.data[prop]}`;
-        lbl.style.color = col;
-        strip.appendChild(lbl);
+      for (const prop in obj.statArr.data) {
+        if (Number.isInteger(obj.statArr.data[prop])) {
+          const lbl = document.createElement(`h2`);
+          lbl.textContent = `${prop}: ${obj.statArr.data[prop]}`;
+          lbl.style.color = col;
+          strip.appendChild(lbl);
+        }
       }
-    }
+    });
 
-    console.log();
-  });
-
-  cnt.addEventListener(`mouseout`, () => {
-    strip.style.visibility = `hidden`;
-  });
+    cnt.addEventListener(`mouseout`, () => {
+      strip.style.visibility = `hidden`;
+    });
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 getInfo();
